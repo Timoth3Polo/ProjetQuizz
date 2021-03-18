@@ -1,0 +1,17 @@
+version: '3'
+services: 
+  database:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports: 
+      - 3306:3306
+    volumes: 
+      - data-mysql:/var/lib/mysql
+    environment: 
+      MYSQL_DATABASE: projetSiteQuizz
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: XU3wBZDK8Ec7v9eLu6WcmA34mU
+      MYSQL_PASSWORD: XU3wBZDK8Ec7v9eLu6WcmA34mU
+volumes: 
+    data-mysql:

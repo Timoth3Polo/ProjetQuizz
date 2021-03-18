@@ -1,0 +1,132 @@
+CREATE TABLE eleve (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	nom VARCHAR (50) NOT NULL,
+	prenom VARCHAR (50) NOT NULL,
+	mdp VARCHAR (255) NOT NULL,
+	pseudo VARCHAR (100) NOT NULL,
+	dateDeNaissance DATE NOT NULL,
+	telephone VARCHAR(10) NOT NULL CHECK (LENGTH(telephone) = 10),
+	mail VARCHAR (100) NOT NULL CHECK (mail LIKE "%@%.%"),
+	PRIMARY KEY (id),
+	UNIQUE KEY uniqueEmail (mail),
+	UNIQUE KEY uniqueContact (nom, prenom, dateDeNaissance),
+	UNIQUE KEY uniqueTel (telephone)
+);
+
+CREATE TABLE professeur (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	nom VARCHAR (50) NOT NULL,
+	prenom VARCHAR (50) NOT NULL,
+	mdp VARCHAR (255) NOT NULL,
+	pseudo VARCHAR (100) NOT NULL,
+	dateDeNaissance DATE NOT NULL,
+	telephone VARCHAR(10) NOT NULL CHECK (LENGTH(telephone) = 10),
+	mail VARCHAR (100) NOT NULL CHECK (mail LIKE "%@%.%"),
+	PRIMARY KEY (id),
+	UNIQUE KEY uniqueEmail (mail),
+	UNIQUE KEY uniqueContact (nom, prenom, dateDeNaissance),
+	UNIQUE KEY uniqueTel (telephone)
+);
+
+CREATE TABLE groupe (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idChefGroupe VARCHAR(255) NOT NULL,
+	libelle VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idChefGroupe) REFERENCES professeur(id)
+);
+
+CREATE TABLE cours (
+	id BIGINT NOT NULL AUTO_INCREMENT,
+	idChefCours BIGINT NOT NULL,
+	libelle VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idChefCours) REFERENCES professeur(id),
+	UNIQUE KEY uniqueNomCours (libelle)
+);	
+
+CREATE TABLE eleveParticiper (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idEleveParticipant VARCHAR(255) NOT NULL,
+	idParticiperGroupe VARCHAR(255),
+	idParticiperCours VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idEleveParticipant) REFERENCES user(id),
+	FOREIGN KEY (idParticiperGroupe) REFERENCES groupe(id),
+	FOREIGN KEY (idParticiperCours) REFERENCES cours(idParticiperCours)
+);
+
+CREATE TABLE groupeAvoirCours (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idCours VARCHAR(255) NOT NULL,
+	idGroupe VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idGroupe) REFERENCES groupe(id),
+	FOREIGN KEY (idCours) REFERENCES cours(id)
+);
+
+CREATE TABLE quizz (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idProfCreateQuizz VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idProfCreateQuizz) REFERENCES user(id)
+);
+
+CREATE TABLE participantQuizz (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idGroupeAvoirCours VARCHAR(255) NOT NULL,
+	idQuizz VARCHAR(255) NOT NULL,
+	quizzTerminer TINYINT NOT NULL,
+	date DATE NOT NULL,
+	temps INT NOT NULl CHECK (temps > 0),
+	PRIMARY KEY (id),
+	FOREIGN KEY (idQuizz) REFERENCES quizz(id),
+	FOREIGN KEY (idGroupeAvoirCours) REFERENCES groupeAvoirCours(id)
+);
+
+CREATE TABLE question (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idProfCreate VARCHAR(255) NOT NULL,
+	laQuestion TEXT NOT NULL CHECK (LENGTH(laQuestion) >= 5),
+	nbPoint FLOAT NOT NULL CHECK (nbPoint > 0),
+	niveau INT NOT NULL CHECK (niveau > 0),
+	PRIMARY KEY (id),
+	FOREIGN KEY (idProfCreate) REFERENCES professeur(id)
+);
+
+CREATE TABLE quizzQuestion (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idQuestion VARCHAR(255) NOT NULL,
+	idQuizz VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idQuestion) REFERENCES question(id),
+	FOREIGN KEY (idQuizz) REFERENCES quizz(id)
+);
+
+CREATE TABLE reponse (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idQuestion VARCHAR(255) NOT NULL,
+	laReponse TEXT NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idQuestion) REFERENCES question(id)
+);
+
+CREATE TABLE partagerQuizz (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idDonneAuProf VARCHAR(255) NOT NULL,
+	idQuizzDonner VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idDonneAuProf) REFERENCES professeur(id),
+	FOREIGN KEY (idQuizzDonner) REFERENCES quizz(id)
+);
+
+CREATE TABLE archiveQuizzFaitEleve (
+	id VARCHAR(255) NOT NULL AUTO_INCREMENT,
+	idEleve VARCHAR(255) NOT NULL,
+	idParticipant VARCHAR(255) NOT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (idParticipant) REFERENCES participantQuizz(id),
+	FOREIGN KEY (idEleve) REFERENCES eleve(id)
+);
+
+	
